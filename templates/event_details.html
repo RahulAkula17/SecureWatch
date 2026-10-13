@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}
+Security Event Details
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Security Event Details</h2>
+
+
+<div class="card event-details">
+
+    <p>
+        <strong>Event ID:</strong>
+        {{ event["_id"] }}
+    </p>
+
+    <p>
+        <strong>Event Type:</strong>
+        {{ event["event_type"] }}
+    </p>
+
+    <p>
+        <strong>Timestamp:</strong>
+        {{ event["timestamp"] }}
+    </p>
+
+    <p>
+        <strong>Description:</strong>
+        {{ event["description"] }}
+    </p>
+
+
+    {% if event["event_type"] == "failed_login" %}
+
+        <p>
+            <strong>Username:</strong>
+            {{ event.get("username", "") }}
+        </p>
+
+        <p>
+            <strong>Source IP:</strong>
+            {{ event.get("source_ip", "") }}
+        </p>
+
+        <p>
+            <strong>Hostname:</strong>
+            {{ event.get("hostname", "") }}
+        </p>
+
+        <p>
+            <strong>Failed Attempts:</strong>
+            {{ event.get("failed_attempts", "") }}
+        </p>
+
+
+    {% elif event["event_type"] == "malware_detection" %}
+
+        <p>
+            <strong>Hostname:</strong>
+            {{ event.get("hostname", "") }}
+        </p>
+
+        <p>
+            <strong>Source IP:</strong>
+            {{ event.get("source_ip", "") }}
+        </p>
+
+        <p>
+            <strong>Malware Name:</strong>
+            {{ event.get("malware_name", "") }}
+        </p>
+
+        <p>
+            <strong>File Path:</strong>
+            {{ event.get("file_path", "") }}
+        </p>
+
+
+    {% elif event["event_type"] == "phishing" %}
+
+        <p>
+            <strong>Sender:</strong>
+            {{ event.get("sender_email", "") }}
+        </p>
+
+        <p>
+            <strong>Recipient:</strong>
+            {{ event.get("recipient_email", "") }}
+        </p>
+
+        <p>
+            <strong>Email Subject:</strong>
+            {{ event.get("subject", "") }}
+        </p>
+
+
+    {% elif event["event_type"] == "network_anomaly" %}
+
+        <p>
+            <strong>Source IP:</strong>
+            {{ event.get("source_ip", "") }}
+        </p>
+
+        <p>
+            <strong>Destination IP:</strong>
+            {{ event.get("destination_ip", "") }}
+        </p>
+
+        <p>
+            <strong>Source Port:</strong>
+            {{ event.get("source_port", "") }}
+        </p>
+
+        <p>
+            <strong>Destination Port:</strong>
+            {{ event.get("destination_port", "") }}
+        </p>
+
+        <p>
+            <strong>Protocol:</strong>
+            {{ event.get("protocol", "") }}
+        </p>
+
+    {% endif %}
+
+
+    <p>
+        <strong>Revision:</strong>
+        {{ event["_rev"] }}
+    </p>
+
+</div>
+
+
+<div class="form-card">
+
+<form method="POST">
+
+    <div class="form-group">
+
+        <label>Severity</label>
+
+        <select name="severity">
+
+            {% for value in ["low", "medium", "high", "critical"] %}
+
+            <option
+                value="{{ value }}"
+                {% if event["severity"] == value %}
+                    selected
+                {% endif %}>
+
+                {{ value }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Status</label>
+
+        <select name="status">
+
+            {% for value in ["open", "investigating", "resolved"] %}
+
+            <option
+                value="{{ value }}"
+                {% if event["status"] == value %}
+                    selected
+                {% endif %}>
+
+                {{ value }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Analyst Notes</label>
+
+        <textarea
+            name="analyst_notes"
+            rows="5">{{ event.get("analyst_notes", "") }}</textarea>
+
+    </div>
+
+
+    <button type="submit">
+        Update Event
+    </button>
+
+</form>
+
+
+<hr>
+
+
+<form
+    method="POST"
+    action="{{ url_for(
+        'delete_event',
+        document_id=event['_id']
+    ) }}"
+    onsubmit="return confirm(
+        'Are you sure you want to delete this security event?'
+    );">
+
+    <button
+        class="danger-button"
+        type="submit">
+        Delete Event
+    </button>
+
+</form>
+
+</div>
+
+{% endblock %}

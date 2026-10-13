@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}
+Security Events
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Security Events</h2>
+
+<div class="filter-box">
+
+    <form method="GET"
+          action="{{ url_for('events_page') }}">
+
+        <div class="filter-row">
+
+            <div class="filter-item">
+
+                <label>Event Type</label>
+
+                <select name="event_type">
+
+                    <option value="">All</option>
+
+                    <option value="failed_login"
+                        {% if selected_event_type == "failed_login" %}
+                            selected
+                        {% endif %}>
+                        Failed Login
+                    </option>
+
+                    <option value="malware_detection"
+                        {% if selected_event_type == "malware_detection" %}
+                            selected
+                        {% endif %}>
+                        Malware Detection
+                    </option>
+
+                    <option value="phishing"
+                        {% if selected_event_type == "phishing" %}
+                            selected
+                        {% endif %}>
+                        Phishing
+                    </option>
+
+                    <option value="network_anomaly"
+                        {% if selected_event_type == "network_anomaly" %}
+                            selected
+                        {% endif %}>
+                        Network Anomaly
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-item">
+
+                <label>Severity</label>
+
+                <select name="severity">
+
+                    <option value="">All</option>
+
+                    <option value="low"
+                        {% if selected_severity == "low" %}
+                            selected
+                        {% endif %}>
+                        Low
+                    </option>
+
+                    <option value="medium"
+                        {% if selected_severity == "medium" %}
+                            selected
+                        {% endif %}>
+                        Medium
+                    </option>
+
+                    <option value="high"
+                        {% if selected_severity == "high" %}
+                            selected
+                        {% endif %}>
+                        High
+                    </option>
+
+                    <option value="critical"
+                        {% if selected_severity == "critical" %}
+                            selected
+                        {% endif %}>
+                        Critical
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-item">
+
+                <label>Status</label>
+
+                <select name="status">
+
+                    <option value="">All</option>
+
+                    <option value="open"
+                        {% if selected_status == "open" %}
+                            selected
+                        {% endif %}>
+                        Open
+                    </option>
+
+                    <option value="investigating"
+                        {% if selected_status == "investigating" %}
+                            selected
+                        {% endif %}>
+                        Investigating
+                    </option>
+
+                    <option value="resolved"
+                        {% if selected_status == "resolved" %}
+                            selected
+                        {% endif %}>
+                        Resolved
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+                <button type="submit">
+                    Apply Filters
+                </button>
+
+                <a class="button"
+                   href="{{ url_for('events_page') }}">
+                    Clear
+                </a>
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<table>
+
+    <thead>
+
+    <tr>
+        <th>Event ID</th>
+        <th>Event Type</th>
+        <th>Severity</th>
+        <th>Status</th>
+        <th>Timestamp</th>
+        <th>Description</th>
+        <th>Action</th>
+    </tr>
+
+    </thead>
+
+
+    <tbody>
+
+    {% for event in events %}
+
+    <tr>
+
+        <td>{{ event["_id"] }}</td>
+
+        <td>{{ event["event_type"] }}</td>
+
+        <td>{{ event["severity"] }}</td>
+
+        <td>{{ event["status"] }}</td>
+
+        <td>{{ event["timestamp"] }}</td>
+
+        <td>{{ event["description"] }}</td>
+
+        <td>
+            <a href="{{ url_for(
+                'event_details',
+                document_id=event['_id']
+            ) }}">
+                View
+            </a>
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+
+{% if not events %}
+
+<p class="empty-message">
+    No security events match the selected filters.
+</p>
+
+{% endif %}
+
+{% endblock %}
